@@ -1,31 +1,8 @@
 using UnityEngine;
 
-public class ToggleColliderOnButtonClick : MonoBehaviour
+public class ColliderToggle : MonoBehaviour
 {
-    public GameObject objectToToggle; // Public variable to set in the Unity Editor
-    private BoxCollider boxCollider;
-
-    private void Start()
-    {
-        if (objectToToggle == null)
-        {
-            Debug.LogError("Please assign a GameObject to the 'Object To Toggle' field in the Unity Editor.");
-            return;
-        }
-
-        // Assuming the BoxCollider is attached to the specified GameObject.
-        boxCollider = objectToToggle.GetComponent<BoxCollider>();
-
-        // Make sure boxCollider is not null, and disable it initially.
-        if (boxCollider != null)
-        {
-            boxCollider.enabled = false;
-        }
-        else
-        {
-            Debug.LogError("BoxCollider not found on the specified GameObject.");
-        }
-    }
+    public GameObject objectToToggle; // Assign the GameObject to be toggled in the Inspector
 
     private void Update()
     {
@@ -34,28 +11,34 @@ public class ToggleColliderOnButtonClick : MonoBehaviour
         {
             Touch touch = Input.GetTouch(0);
 
-            // Check if the touch phase is Began
-            if (touch.phase == TouchPhase.Began)
+            // Check if the touch is on UI element (optional)
+            if (touch.phase == TouchPhase.Began && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(touch.fingerId))
             {
-                // Toggle the box collider
-                ToggleBoxCollider();
+                ToggleCollider();
             }
         }
     }
 
-    private void ToggleBoxCollider()
+    private void ToggleCollider()
     {
-        // Toggle the state of the box collider
-        if (boxCollider != null)
+        // Check if the object to toggle is not null
+        if (objectToToggle != null)
         {
-            boxCollider.enabled = !boxCollider.enabled;
+            // Toggle the Box Collider component
+            Collider collider = objectToToggle.GetComponent<Collider>();
 
-            // Print the current state to the console (optional)
-            Debug.Log("Box Collider Enabled: " + boxCollider.enabled);
+            if (collider != null)
+            {
+                collider.enabled = !collider.enabled;
+            }
+            else
+            {
+                Debug.LogError("The specified GameObject does not have a Collider component.");
+            }
         }
         else
         {
-            Debug.LogError("BoxCollider not found on the specified GameObject.");
+            Debug.LogError("Please assign the GameObject to be toggled in the Inspector.");
         }
     }
 }
